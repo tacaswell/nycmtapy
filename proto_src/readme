@@ -1,0 +1,3 @@
+To re-generate the python file use
+
+protoc -I=../proto_src/ --python_out=. ../proto_src/*.proto

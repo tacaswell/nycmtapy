@@ -47,6 +47,7 @@ setup(
     entry_points={
         'console_scripts': [
             # 'command = some.module:some_function',
+            'pollmta = nycmtapy.cli:fetch_subway_to_disk'
         ],
     },
     include_package_data=True,

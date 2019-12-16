@@ -9,6 +9,22 @@ from pathlib import Path
 __version__ = get_versions()["version"]
 del get_versions
 
+
+def get_realtime_feeds():
+    return {
+        "lirr": "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/lirr%2Fgtfs-lirr",
+        "mnr": "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/mnr%2Fgtfs-mnr",
+        "mta_ace": "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-ace",
+        "mta_bdfm": "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-bdfm",
+        "mta_g": "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-g",
+        "mta_jz": "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-jz",
+        "mta_nqrw": "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-nqrw",
+        "mta_123456": "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs",
+        "mta_7": "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-7",
+        # 'mta_sir': 'https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-si'
+    }
+
+
 def load_one_msg(buff):
     """Parse one protbuf blob -> FeedMessage
 
@@ -74,4 +90,17 @@ def fetch_static(data_path):
             Path(data_path) / f"{key}_static_{int(time.time())}.zip", "wb"
         ) as fout:
             fout.write(r.content)
+
+
+def fetch_realtime(data_path, key, urls=None):
+    data_path = Path(data_path)
+    data_path.mkdir(exist_ok=True, parents=True)
+    urls = get_realtime_feeds()
+    for feed, url in urls.items():
+        ret = requests.get(url, headers={"x-api-key": key})
+        if not ret.ok:
+            print("womp womp")
+            continue
+        with open(data_path / f"{feed}_{int(time.time())}.pb", "wb") as fout:
+            fout.write(ret.content)
 
